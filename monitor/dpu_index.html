@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+        <title>PDA3.0 DM Project - DPU - rtM</title>
+        <link rel="apple-touch-icon" sizes="180x180" href="static/dpu/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="static/dpu/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="static/dpu/favicon-16x16.png">
+        <link rel="manifest" href="static/dpu/site.webmanifest">
+        <style>
+            h1,
+            h2,
+            h3 {
+                font-family: sans-serif;
+            }
+            th,
+            td {
+              border: 1px solid rgb(160 160 160);
+              padding: 8px 10px;
+            }
+
+            th[scope='col'] {
+              background-color: #505050;
+              color: #fff;
+            }
+
+            th[scope='row'] {
+              background-color: #d6ecd4;
+            }
+
+            td {
+              text-align: left;
+            }
+
+            tr:nth-of-type(even) {
+              background-color: #eee;
+            }
+
+            table {
+              border-collapse: collapse;
+              border: 2px solid rgb(140 140 140);
+              font-family: sans-serif;
+              font-size: 0.8rem;
+              letter-spacing: 1px;
+            }
+
+            .connection-status {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                display: inline-block;
+                background-color: red;
+            }
+
+            .connected {
+                background-color: green;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>PDA3.0 Data migration Project - Data Processing Unit (DPU) - rtMonitor</h1>
+        <h3>WebSocket Status: <span class="connection-status" id="connection-status"></span></h3>
+        <hr />
+        <h2>Queue Length: <span id="queue-length">?</span></h2>
+        <h2>DPU Log: </h2>
+        <table id="log">
+            <!-- log content -->
+        </table>
+        <script>
+            // 构建路径
+            const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+            const host = window.location.host;
+            const wsBasePath = '/ws/dpu/';
+
+            const wsQueueLengthUrl = `${protocol}//${host}${wsBasePath}queue-length`;
+            const wsPrintLogUrl = `${protocol}//${host}${wsBasePath}print-log`;
+
+            // 队列长度
+            const ws1 = new WebSocket(wsQueueLengthUrl);
+            ws1.onopen = function() {
+                updateConnectionStatus(ws1);
+            };
+            ws1.onclose = function() {
+                updateConnectionStatus(ws1, false);
+            };
+            ws1.onmessage = function(event) {
+                document.getElementById("queue-length").innerText = event.data;
+            };
+
+            // CDC日志
+            const logTable = document.getElementById('log');
+            const ws2 = new WebSocket(wsPrintLogUrl);
+            ws2.onopen = function() {
+                updateConnectionStatus(ws2);
+            };
+            ws2.onclose = function() {
+                updateConnectionStatus(ws2, false);
+            };
+            ws2.onmessage = function(event) {
+                const newRow = document.createElement('tr');
+                const newCell = document.createElement('td');
+                newCell.textContent = event.data;
+                newRow.appendChild(newCell);
+                logTable.insertBefore(newRow, logTable.firstChild.nextSibling);
+                if (logTable.rows.length > 100) {
+                    logTable.deleteRow(logTable.rows.length - 1);
+                }
+            };
+
+            function updateConnectionStatus(ws, connected = true) {
+                const statusIndicator = document.getElementById('connection-status');
+                if (connected) {
+                    statusIndicator.classList.add('connected');
+                } else {
+                    statusIndicator.classList.remove('connected');
+                }
+            }
+        </script>
+    </body>
+</html>

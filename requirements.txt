@@ -1,0 +1,9 @@
+mysql-replication~=1.0.9
+uvicorn~=0.32.0
+fastapi~=0.115.2
+persist-queue~=1.0.0
+PyYAML~=6.0.2
+tailer~=0.4.1
+PyMySQL~=1.1.1
+loguru~=0.7.2
+websockets~=13.1

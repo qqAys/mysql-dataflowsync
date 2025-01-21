@@ -1,0 +1,70 @@
+x-environment: &environment
+  environment:
+    - TZ=Asia/Shanghai
+    - MARIADB_ROOT_PASSWORD=RandomPassword_123.
+    - MARIADB_AUTO_UPGRADE=0
+
+x-volume: &volume
+  volumes:
+    - ~/mysql-dataflowsync:/mysql-dataflowsync_data
+
+x-network: &network
+  networks:
+    - mysql-dataflowsync-net
+
+x-logging: &logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "1g"
+
+x-depends_on: &depends_on
+  depends_on:
+    db:
+      condition: service_healthy
+
+x-restart: &restart
+  restart: always
+
+services:
+   # mysql-dataflowsync database
+  db:
+    <<: [*environment, *network, *restart]
+    image: mariadb:lts
+    container_name: DFS_DB
+    ports:
+      - "13306:3306"
+    volumes:
+      - ~/mysql-dataflowsync/log_db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # CDC
+  cdc:
+    <<: [*environment, *volume, *network, *logging, *depends_on, *restart]
+    container_name: DFS_CDC
+    image: mysql-dataflowsync:latest
+    command: ["--mode", "cdc"]
+
+  # DPU
+  dpu:
+    <<: [*environment, *volume, *network, *logging, *depends_on, *restart]
+    container_name: DFS_DPU
+    image: mysql-dataflowsync:latest
+    command: ["--mode", "dpu"]
+
+  # DFS monitor
+#  monitor:
+#    <<: [*environment, *volume, *network, *depends_on, *restart]
+#    container_name: DFS_Monitor
+#    image: mysql-dataflowsync:latest
+#    command: ["--mode", "monitor"]
+#    ports:
+#      - "3000:3000"
+
+networks:
+  mysql-dataflowsync-net:

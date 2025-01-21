@@ -1,0 +1,24 @@
+project_name: "data_migration_project"
+
+# Whether to enable DML serialisation
+dml_serialization: True
+
+# If you want to specify location synchronisation, you need to fill in binlog_file and binlog_pos.
+#binlog_file: "mysql-bin.000002"
+#binlog_pos: 1000020
+
+# Source database
+source_database:
+  host: "source"
+  port: 3306
+  user: "root"
+  passwd: "source_database_password"
+  schemas: "database_name"
+
+# Target database
+target_database:
+  host: "target"
+  port: 3306
+  user: "root"
+  passwd: "target_database_password"
+  schemas: "database_name"
