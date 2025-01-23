@@ -11,7 +11,7 @@ flowchart
         SDB -.- BL
     end
     
-    subgraph "fa:fa-cubes DMP Server"
+    subgraph "fa:fa-cubes DFS Server"
         subgraph "fa:fa-cube CDC Unit"
             BLS{{"fa:fa-code binlog_stream_reader"}}
             FM1{{"fa:fa-code cdc_field_mapper"}}
@@ -21,7 +21,7 @@ flowchart
         
         
         Q[("fa:fa-database Persist Queue")]
-        LDB[("fa:fa-database DMP Database")]
+        LDB[("fa:fa-database DFS Database")]
         
         FM1 ==> |"PUT"| Q
         
@@ -35,13 +35,13 @@ flowchart
         
         Q ==> |"GET"| RM
         
-        subgraph "fa:fa-cube DMP Monitor"
+        subgraph "fa:fa-cube DFS Monitor"
             RTM["fa:fa-window-maximize WEB UI"]
-            API{{"fa:fa-code dmp_fastapi_router"}}
+            API{{"fa:fa-code DFS_fastapi_router"}}
             
         end
         
-        LDB -.-> |"DMP INFO"| API -.-> |"Websocket"| RTM
+        LDB -.-> |"DFS INFO"| API -.-> |"Websocket"| RTM
         BLS -.-> |"CDC Receive Log"| LDB
         RM <==> |"DPU Relationship Creation AND Query"| LDB
         FM2 -.-> |"DPU Processing Log"| LDB
@@ -60,7 +60,7 @@ Edit on mermaid.live: [DFS workflow](https://mermaid.live/edit#pako:eNqVVX9vokAQ
 # Environment Requirements
 - System: Linux or macOS
 - Network: whitelisted IP specified by the source database, and unchangeable
-- DMP database: MariaDB 11.4.x
+- DFS database: MariaDB 11.4.x
 - Source database: MySQL 5.7.x (Binlog enabled, and `binlog-format = ROW`)
 - Target database: MySQL 8.0.x
 - Python: 3.12
