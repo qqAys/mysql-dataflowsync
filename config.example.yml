@@ -3,7 +3,7 @@ project_name: "data_migration_project"
 # Whether to enable DML serialisation
 dml_serialization: True
 
-# If you want to specify location synchronisation, you need to fill in binlog_file and binlog_pos.
+# If you want to specify location synchronisation, you need to set binlog_file and binlog_pos.
 #binlog_file: "mysql-bin.000002"
 #binlog_pos: 1000020
 
