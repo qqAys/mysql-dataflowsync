@@ -84,7 +84,7 @@ Edit on mermaid.live: [DFS workflow](https://mermaid.live/edit#pako:eNqVVWtv2jAU
 
 2. Build and start the container
 
-    ``bash
+    ```bash
     docker build -t mysql-dataflowsync:latest .
     docker compose up -d
     ```
