@@ -1,7 +1,7 @@
 mysql-dataflowsync(DFS)
 ===
 
-[简体中文](./README_zh-CN.md)
+[简体中文](./README.zh-CN.md)
 
 # What is DFS?
 DFS is a data synchronisation framework that implements data capture by streaming reads of mysql binlogs, targeting either mysql or other databases. The framework consists of a millisecond incremental data capture module (CDC), a persistent queue [persist-queue](https://github.com/peter-wangxu/persist-queue) based on a sqlite database, an automatic relational processing module (rel_mgr), and a business logical complex data transformation module (DPU) using [dfs-entrypoint.py](./dfs-entrypoint.py), which can be called in any combination. In a clustered database with an average daily load of 75,000 events, incremental data synchronisation can be completed with a latency of seconds (average latency of less than 1 second), while maintaining data integrity and consistency.
